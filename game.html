@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FARMKES - Кликай и зарабатывай</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial; }
+        body { background: #0a0a0a; color: white; padding: 20px; text-align: center; }
+        .title { color: #8a2be2; font-size: 2.5rem; margin: 20px 0; }
+        .stats { display: flex; justify-content: space-around; margin: 20px; font-size: 1.2rem; }
+        .coins { color: gold; }
+        .level { color: #00bfff; }
+        .bank-card { 
+            width: 300px; height: 180px; background: #1e3c72; 
+            margin: 30px auto; border-radius: 15px; display: flex; 
+            align-items: center; justify-content: center; font-size: 1.5rem;
+            cursor: pointer; transition: transform 0.3s;
+        }
+        .bank-card:hover { transform: scale(1.05); }
+        .upgrade { 
+            background: #1a1a2e; padding: 15px; margin: 10px; 
+            border-radius: 10px; cursor: pointer;
+        }
+        .notification {
+            position: fixed; top: 20px; right: 20px; 
+            background: #2a2a4a; padding: 15px; border-radius: 8px;
+            display: none;
+        }
+        .notification.show { display: block; }
+    </style>
+</head>
+<body>
+    <h1 class="title">FARMKES</h1>
+    <p>Кликай и зарабатывай на FARMKES</p>
+
+    <div class="stats">
+        <div class="coins">Монеты: <span id="coins">0</span></div>
+        <div class="level">Уровень: <span id="level">1</span></div>
+    </div>
+
+    <div class="bank-card" id="bank-card">
+        FARMKES CARD<br>
+        <small>+<span id="click-value">1</span> монет за клик</small>
+    </div>
+
+    <div class="upgrade" id="upgrade-click">
+        <strong>Улучшение клика</strong> - 💎<span id="click-cost">10</span>
+    </div>
+
+    <div class="notification" id="notification">Тест уведомления</div>
+
+    <script>
+        // Простая версия игры
+        let coins = 0;
+        let level = 1;
+        let clickValue = 1;
+        let clickCost = 10;
+
+        const coinsElement = document.getElementById('coins');
+        const levelElement = document.getElementById('level');
+        const bankCard = document.getElementById('bank-card');
+        const notification = document.getElementById('notification');
+
+        function showMessage(text) {
+            notification.textContent = text;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 2000);
+        }
+
+        bankCard.addEventListener('click', function() {
+            coins += clickValue;
+            coinsElement.textContent = coins;
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => this.style.transform = 'scale(1)', 100);
+        });
+
+        document.getElementById('upgrade-click').addEventListener('click', function() {
+            if (coins >= clickCost) {
+                coins -= clickCost;
+                coinsElement.textContent = coins;
+                clickValue += 1;
+                clickCost = Math.floor(clickCost * 1.5);
+                document.getElementById('click-cost').textContent = clickCost;
+                document.getElementById('click-value').textContent = clickValue;
+                showMessage('✨ Улучшение куплено!');
+            }
+        });
+
+        showMessage('Добро пожаловать в FARMKES!');
+    </script>
+</body>
+</html>
