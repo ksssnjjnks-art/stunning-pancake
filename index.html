@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FARMKES - Кликай и зарабатывай</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial; }
+        body { background: #0a0a0a; color: white; padding: 20px; text-align: center; min-height: 100vh; }
+        .title { color: #8a2be2; font-size: 2.5rem; margin: 20px 0; }
+        .description { color: #aaa; margin-bottom: 30px; }
+        .stats { display: flex; justify-content: space-around; margin: 20px; font-size: 1.2rem; }
+        .coins { color: gold; }
+        .level { color: #00bfff; }
+        .bank-card { 
+            width: 300px; height: 180px; background: linear-gradient(135deg, #1e3c72, #2a5298); 
+            margin: 30px auto; border-radius: 15px; display: flex; 
+            align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold;
+            cursor: pointer; transition: transform 0.3s; flex-direction: column;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .bank-card:hover { transform: scale(1.05); }
+        .bank-card:active { transform: scale(0.95); }
+        .upgrade { 
+            background: #1a1a2e; padding: 15px; margin: 10px; 
+            border-radius: 10px; cursor: pointer; border: 1px solid #333;
+        }
+        .upgrade:hover { background: #2a2a4a; }
+        .notification {
+            position: fixed; top: 20px; right: 20px; 
+            background: #2a2a4a; padding: 15px; border-radius: 8px;
+            border-left: 4px solid #8a2be2;
+            display: none;
+        }
+        .notification.show { display: block; }
+        .progress-bar { 
+            width: 80%; height: 20px; background: #333; 
+            margin: 20px auto; border-radius: 10px; overflow: hidden;
+        }
+        .progress-fill { 
+            height: 100%; background: linear-gradient(90deg, #8a2be2, #00bfff); 
+            width: 0%; transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">FARMKES</h1>
+    <p class="description">Кликай и зарабатывай на FARMKES</p>
+
+    <div class="stats">
+        <div class="coins">Монеты: <span id="coins">0</span></div>
+        <div class="level">Уровень: <span id="level">1</span></div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div>До следующего уровня: <span id="progress-text">0/100</span></div>
+
+    <div class="bank-card" id="bank-card">
+        FARMKES CARD
+        <div style="font-size: 0.9rem; margin-top: 10px;">+<span id="click-value">1</span> монет за клик</div>
+    </div>
+
+    <div class="upgrade" id="upgrade-click">
+        <strong>Улучшение клика</strong> - 💎<span id="click-cost">10</span>
+        <div style="font-size: 0.8rem; color: #ccc;">Уровень: <span id="click-level">1</span></div>
+    </div>
+
+    <div class="notification" id="notification">Тест уведомления</div>
+
+    <script>
+        // Игровые переменные
+        let coins = 0;
+        let level = 1;
+        let exp = 0;
+        let expToNextLevel = 100;
+        let clickValue = 1;
+        let clickLevel = 1;
+        let clickCost = 10;
+
+        // Элементы DOM
+        const coinsElement = document.getElementById('coins');
+        const levelElement = document.getElementById('level');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const bankCard = document.getElementById('bank-card');
+        const clickValueElement = document.getElementById('click-value');
+        const notification = document.getElementById('notification');
+
+        // Функции
+        function showMessage(text) {
+            notification.textContent = text;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 2000);
+        }function updateProgress() {
+            const percent = (exp / expToNextLevel) * 100;
+            progressFill.style.width = percent + '%';
+            progressText.textContent = exp + '/' + expToNextLevel;
+        }
+
+        function checkLevelUp() {
+            if (exp >= expToNextLevel) {
+                level++;
+                exp = 0;
+                expToNextLevel = Math.floor(expToNextLevel * 1.5);
+                levelElement.textContent = level;
+                showMessage('🎉 Уровень ' + level + '!');
+                updateProgress();
+            }
+        }
+
+        // Обработчики событий
+        bankCard.addEventListener('click', function() {
+            coins += clickValue;
+            exp += clickValue;
+            coinsElement.textContent = coins;
+            
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => this.style.transform = 'scale(1)', 100);
+            
+            updateProgress();
+            checkLevelUp();
+        });
+
+        document.getElementById('upgrade-click').addEventListener('click', function() {
+            if (coins >= clickCost) {
+                coins -= clickCost;
+                coinsElement.textContent = coins;
+                clickValue++;
+                clickLevel++;
+                clickCost = Math.floor(clickCost * 2);
+                
+                document.getElementById('click-cost').textContent = clickCost;
+                document.getElementById('click-value').textContent = clickValue;
+                document.getElementById('click-level').textContent = clickLevel;
+                
+                showMessage('✨ Улучшение куплено!');
+            }
+        });
+
+        // Запуск игры
+        showMessage('🎯 Добро пожаловать в FARMKES! Кликайте по карте!');
+        updateProgress();
+    </script>
+</body>
+</html>
